@@ -49,6 +49,7 @@ make drivers
 
 
 # Score record
+## loop unrolling
 not unroll: 0/60
 unroll 10 times: 25.5/60, 
 unroll 12 times: 21.9/60
@@ -57,3 +58,11 @@ unroll 7 times: 29.4/60, 11.27
 unroll 6 times: 30.0/60, 11.25
 unroll 5 times: 29.5/60, 11.27
 unroll 4 times: 27.2/60, 11.37
+
+In the end, we found 6 is optimal.
+
+The file is in **ncopyV6.ys**
+
+The disadvantge: use **limit**
+
+## solve load use hazard
