@@ -63,7 +63,7 @@ In the end, we found 6 is optimal.
 
 The file is in **ncopyV6.ys**
 
-The disadvantge: use **limit**
+The disadvantge: use one more register to store **limit** 
 
 ## solve load use hazard
  unroll 6, score: 60/60, 9.95 (V9)
@@ -75,4 +75,5 @@ unroll 3, score: 59.8. 10.01
 The best file is **V12**.
 
 ## binary search tree
-to be done. use binary search tree in the restloop to reduce stall.
+We first start to modify V9(unroll 6)
+CPE 9.21
