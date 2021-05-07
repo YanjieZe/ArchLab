@@ -1,5 +1,9 @@
 # Yanjie Ze 519021910706
 # score: 25.5/60
+# idea: loop unrolling 10 times
+# bit length: 388 bytes
+
+
 #/* $begin ncopy-ys */
 ##################################################################
 # ncopy.ys - Copy a src block of len ints to dst.

@@ -16,6 +16,8 @@ main:	irmovl Stack, %esp  	# Set up stack pointer
 	halt			# should halt with num nonzeros in %eax
 StartFun:
 # Yanjie Ze 519021910706
+# score: 30/60
+# idea: loop unrolling 6 times
 
 #/* $begin ncopy-ys */
 ##################################################################
@@ -45,7 +47,7 @@ ncopy:	pushl %ebp		# Save old frame pointer
 	andl %edx, %edx 	# len<=0?
 	jle count0
 	rrmovl %edx, %edi 	# limit = len
-	iaddl $-10, %edi     # limit = len - 10
+	iaddl $-6, %edi     # limit = len - 7
 	jle restloop		# if limit<=0, goto rest:
 
 loop1:	mrmovl (%ebx), %esi # read val from src
@@ -78,40 +80,17 @@ loop5:	mrmovl 16(%ebx), %esi # read val from src
 		jle loop6 # if so, go to next loop
 		iaddl $1, %eax # count ++
 
+
 loop6:	mrmovl 20(%ebx), %esi # read val from src
 		rmmovl %esi, 20(%ecx) # store
-		andl %esi, %esi # val <=0?
-		jle loop7 # if so, go to next loop
-		iaddl $1, %eax # count ++
-
-loop7:	mrmovl 24(%ebx), %esi # read val from src
-		rmmovl %esi, 24(%ecx) # store
-		andl %esi, %esi # val <=0?
-		jle loop8 # if so, go to next loop
-		iaddl $1, %eax # count ++
-
-loop8:	mrmovl 28(%ebx), %esi # read val from src
-		rmmovl %esi, 28(%ecx) # store
-		andl %esi, %esi # val <=0?
-		jle loop9 # if so, go to next loop
-		iaddl $1, %eax # count ++
-
-loop9:	mrmovl 32(%ebx), %esi # read val from src
-		rmmovl %esi, 32(%ecx) # store
-		andl %esi, %esi # val <=0?
-		jle loop10 # if so, go to next loop
-		iaddl $1, %eax # count ++
-
-loop10:	mrmovl 36(%ebx), %esi # read val from src
-		rmmovl %esi, 36(%ecx) # store
 		andl %esi, %esi # val <=0?
 		jle update # if so, go to update, since this is the final loop
 		iaddl $1, %eax # count ++
 
-update: iaddl $40, %ebx # update
-		iaddl $40, %ecx # update
+update: iaddl $24, %ebx # update
+		iaddl $24, %ecx # update
 		rrmovl %edi, %edx # edx = edi(len=limit)
-		iaddl $-10, %edi # limit -= 10
+		iaddl $-6, %edi # limit -= 8
 		jg loop1 # if limit > 0, go to new loop1
 		
 
@@ -152,13 +131,13 @@ EndFun:
 	.align 4
 src:
 	.long -1
-	.long 2
-	.long 3
-	.long 4
+	.long -2
+	.long -3
+	.long -4
 	.long -5
 	.long -6
-	.long 7
-	.long -8
+	.long -7
+	.long 8
 	.long 9
 	.long -10
 	.long -11
@@ -166,54 +145,54 @@ src:
 	.long 13
 	.long -14
 	.long -15
-	.long 16
-	.long -17
+	.long -16
+	.long 17
 	.long -18
-	.long 19
+	.long -19
 	.long -20
 	.long -21
 	.long 22
 	.long 23
 	.long 24
-	.long -25
-	.long -26
+	.long 25
+	.long 26
 	.long 27
 	.long -28
 	.long -29
-	.long 30
+	.long -30
 	.long 31
-	.long -32
+	.long 32
 	.long -33
-	.long -34
-	.long 35
+	.long 34
+	.long -35
 	.long 36
 	.long 37
 	.long 38
 	.long 39
-	.long -40
+	.long 40
 	.long 41
-	.long 42
+	.long -42
 	.long -43
 	.long -44
 	.long -45
 	.long -46
-	.long 47
+	.long -47
 	.long -48
-	.long -49
-	.long -50
-	.long 51
+	.long 49
+	.long 50
+	.long -51
 	.long 52
 	.long -53
-	.long 54
+	.long -54
 	.long -55
-	.long -56
+	.long 56
 	.long 57
-	.long -58
+	.long 58
 	.long 59
 	.long 60
 	.long 61
 	.long 62
-	.long -63
+	.long 63
 	.long 0xbcdefa # This shouldn't get moved
 
 	.align 16

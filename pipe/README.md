@@ -19,6 +19,9 @@ make VERSION=full
 ./psim -g ldriver.yo
 ./psim -t ldriver.yo
 
+## compile ncopy.yo file
+../misc/yas ncopy.ys
+
 ## test length
 ./check-len.pl < ncopy.yo
 
@@ -43,3 +46,14 @@ make drivers
 
 # 4 get score
 ./benchmark.pl
+
+
+# Score record
+not unroll: 0/60
+unroll 10 times: 25.5/60, 
+unroll 12 times: 21.9/60
+unroll 8 times: 28.2/60, 
+unroll 7 times: 29.4/60, 11.27
+unroll 6 times: 30.0/60, 11.25
+unroll 5 times: 29.5/60, 11.27
+unroll 4 times: 27.2/60, 11.37

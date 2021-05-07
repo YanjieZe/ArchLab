@@ -1,6 +1,6 @@
 # Yanjie Ze 519021910706
-# score: 30/60
-# idea: loop unrolling 6 times
+# score: 29.4/60
+# idea: loop unrolling 7 times
 
 #/* $begin ncopy-ys */
 ##################################################################
@@ -30,7 +30,7 @@ ncopy:	pushl %ebp		# Save old frame pointer
 	andl %edx, %edx 	# len<=0?
 	jle count0
 	rrmovl %edx, %edi 	# limit = len
-	iaddl $-6, %edi     # limit = len - 7
+	iaddl $-7, %edi     # limit = len - 7
 	jle restloop		# if limit<=0, goto rest:
 
 loop1:	mrmovl (%ebx), %esi # read val from src
@@ -63,17 +63,22 @@ loop5:	mrmovl 16(%ebx), %esi # read val from src
 		jle loop6 # if so, go to next loop
 		iaddl $1, %eax # count ++
 
-
 loop6:	mrmovl 20(%ebx), %esi # read val from src
 		rmmovl %esi, 20(%ecx) # store
+		andl %esi, %esi # val <=0?
+		jle loop7 # if so, go to next loop
+		iaddl $1, %eax # count ++
+
+loop7:	mrmovl 24(%ebx), %esi # read val from src
+		rmmovl %esi, 24(%ecx) # store
 		andl %esi, %esi # val <=0?
 		jle update # if so, go to update, since this is the final loop
 		iaddl $1, %eax # count ++
 
-update: iaddl $24, %ebx # update
-		iaddl $24, %ecx # update
+update: iaddl $28, %ebx # update
+		iaddl $28, %ecx # update
 		rrmovl %edi, %edx # edx = edi(len=limit)
-		iaddl $-6, %edi # limit -= 8
+		iaddl $-7, %edi # limit -= 8
 		jg loop1 # if limit > 0, go to new loop1
 		
 
