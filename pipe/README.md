@@ -66,3 +66,11 @@ The file is in **ncopyV6.ys**
 The disadvantge: use **limit**
 
 ## solve load use hazard
+ unroll 6, score: 60/60, 9.95 (V9)
+ unroll 7, score: 59.4/60, 10.03
+unroll 5, score:60/60, 9.90
+unroll 4, score:60/60, 9.89
+unroll 3, score: 59.8. 10.01
+
+
+## binary search tree

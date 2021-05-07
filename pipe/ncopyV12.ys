@@ -1,6 +1,6 @@
 # Yanjie Ze 519021910706
-# score: 60/60, 
-# idea: loop unrolling 3 times + solving load use hazard
+# score: 60/60, 9.89
+# idea: loop unrolling 4 times + solving load use hazard
 
 #/* $begin ncopy-ys */
 ##################################################################
@@ -27,7 +27,7 @@ ncopy:	pushl %ebp		# Save old frame pointer
 # You can modify this portion
 	# Loop header
 	xorl %eax,%eax		# count = 0;
-	iaddl $-3, %edx    # len = len - 3
+	iaddl $-4, %edx    # len = len - 4
 	jl restjudge		# if len<0, goto rest:
 
 loop1:	mrmovl (%ebx), %esi # val1
@@ -43,20 +43,27 @@ loop2:	mrmovl 8(%ebx), %esi # val1
 		jle loop3 # if so, go to next loop
 		iaddl $1, %eax # count ++
 
-loop3:	
+loop3:	mrmovl 12(%ebx), %edi # val2
 		rmmovl %esi, 8(%ecx) # store val1
 		andl %esi, %esi # val1 <=0?
+		jle loop4 # if so, go to next loop
+		iaddl $1, %eax # count ++
+
+
+loop4:	
+		rmmovl %edi, 12(%ecx) # store val2
+		andl %edi, %edi # val2 <=0?
 		jle update # if so, go to update, since this is the final loop
 		iaddl $1, %eax # count ++
 
-update: iaddl $12, %ebx # update
-		iaddl $12, %ecx # update
-		iaddl $-3, %edx # len -= 5
+update: iaddl $16, %ebx # update
+		iaddl $16, %ecx # update
+		iaddl $-4, %edx # len -= 6
 		jge loop1 # if len >= 0, go to new loop1
 		
 ### rest loop ###
 restjudge:
-	iaddl $3, %edx # len<=0 for now, len=len+6 >=0
+	iaddl $4, %edx # len<=0 for now, len=len+4 >=0
 	jle count0 # if len<=0, end; else need to finish the rest
 
 restloop:

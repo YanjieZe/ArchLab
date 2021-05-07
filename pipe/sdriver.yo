@@ -2,22 +2,22 @@
                       | # Test for copying block of size 4;
                       | #######################################################################
   0x000:              | 	.pos 0
-  0x000: 30f4b8010000 | main:	irmovl Stack, %esp  	# Set up stack pointer
-  0x006: 30f5b8010000 | 	irmovl Stack, %ebp  	# Set up base pointer
+  0x000: 30f478010000 | main:	irmovl Stack, %esp  	# Set up stack pointer
+  0x006: 30f578010000 | 	irmovl Stack, %ebp  	# Set up base pointer
                       | 
                       | 	# Set up arguments for copy function and then invoke it
   0x00c: 30f004000000 | 	irmovl $4, %eax		# src and dst have 4 elements
   0x012: a00f         | 	pushl %eax
-  0x014: 30f064010000 | 	irmovl dest, %eax	# dst array
+  0x014: 30f024010000 | 	irmovl dest, %eax	# dst array
   0x01a: a00f         | 	pushl %eax
-  0x01c: 30f04c010000 | 	irmovl src, %eax	# src array
+  0x01c: 30f000010000 | 	irmovl src, %eax	# src array
   0x022: a00f         | 	pushl %eax
   0x024: 802a000000   | 	call ncopy		 
   0x029: 00           | 	halt			# should halt with num nonzeros in %eax
   0x02a:              | StartFun:
                       | # Yanjie Ze 519021910706
-                      | # score: 30/60
-                      | # idea: loop unrolling 6 times
+                      | # score: 60/60, 
+                      | # idea: loop unrolling 3 times + solving load use hazard
                       | 
                       | #/* $begin ncopy-ys */
                       | ##################################################################
@@ -44,8 +44,8 @@
                       | # You can modify this portion
                       | 	# Loop header
   0x046: 6300         | 	xorl %eax,%eax		# count = 0;
-  0x048: c0f2faffffff | 	iaddl $-6, %edx    # len = len - 6
-  0x04e: 7200010000   | 	jl restjudge		# if len<0, goto rest:
+  0x048: c0f2fdffffff | 	iaddl $-3, %edx    # len = len - 3
+  0x04e: 72b5000000   | 	jl restjudge		# if len<0, goto rest:
                       | 
   0x053: 506300000000 | loop1:	mrmovl (%ebx), %esi # val1
   0x059: 507304000000 | 		mrmovl 4(%ebx), %edi # val2
@@ -60,111 +60,92 @@
   0x080: 718b000000   | 		jle loop3 # if so, go to next loop
   0x085: c0f001000000 | 		iaddl $1, %eax # count ++
                       | 
-  0x08b: 50730c000000 | loop3:	mrmovl 12(%ebx), %edi # val2
-  0x091: 406108000000 | 		rmmovl %esi, 8(%ecx) # store val1
-  0x097: 6266         | 		andl %esi, %esi # val1 <=0?
-  0x099: 71a4000000   | 		jle loop4 # if so, go to next loop
-  0x09e: c0f001000000 | 		iaddl $1, %eax # count ++
+  0x08b:              | loop3:	
+  0x08b: 406108000000 | 		rmmovl %esi, 8(%ecx) # store val1
+  0x091: 6266         | 		andl %esi, %esi # val1 <=0?
+  0x093: 719e000000   | 		jle update # if so, go to update, since this is the final loop
+  0x098: c0f001000000 | 		iaddl $1, %eax # count ++
                       | 
-  0x0a4: 506310000000 | loop4:	mrmovl 16(%ebx), %esi # val1
-  0x0aa: 40710c000000 | 		rmmovl %edi, 12(%ecx) # store val2
-  0x0b0: 6277         | 		andl %edi, %edi # val2 <=0?
-  0x0b2: 71bd000000   | 		jle loop5 # if so, go to next loop
-  0x0b7: c0f001000000 | 		iaddl $1, %eax # count ++
-                      | 
-  0x0bd: 507314000000 | loop5:	mrmovl 20(%ebx), %edi # val2
-  0x0c3: 406110000000 | 		rmmovl %esi, 16(%ecx) # store val1
-  0x0c9: 6266         | 		andl %esi, %esi # val1 <=0?
-  0x0cb: 71d6000000   | 		jle loop6 # if so, go to next loop
-  0x0d0: c0f001000000 | 		iaddl $1, %eax # count ++
-                      | 
-                      | 
-  0x0d6:              | loop6:	
-  0x0d6: 407114000000 | 		rmmovl %edi, 20(%ecx) # store val2
-  0x0dc: 6277         | 		andl %edi, %edi # val2 <=0?
-  0x0de: 71e9000000   | 		jle update # if so, go to update, since this is the final loop
-  0x0e3: c0f001000000 | 		iaddl $1, %eax # count ++
-                      | 
-  0x0e9: c0f318000000 | update: iaddl $24, %ebx # update
-  0x0ef: c0f118000000 | 		iaddl $24, %ecx # update
-  0x0f5: c0f2faffffff | 		iaddl $-6, %edx # len -= 6
-  0x0fb: 7553000000   | 		jge loop1 # if len >= 0, go to new loop1
+  0x09e: c0f30c000000 | update: iaddl $12, %ebx # update
+  0x0a4: c0f10c000000 | 		iaddl $12, %ecx # update
+  0x0aa: c0f2fdffffff | 		iaddl $-3, %edx # len -= 5
+  0x0b0: 7553000000   | 		jge loop1 # if len >= 0, go to new loop1
                       | 		
                       | ### rest loop ###
-  0x100:              | restjudge:
-  0x100: c0f206000000 | 	iaddl $6, %edx # len<=0 for now, len=len+6 >=0
-  0x106: 713f010000   | 	jle count0 # if len<=0, end; else need to finish the rest
+  0x0b5:              | restjudge:
+  0x0b5: c0f203000000 | 	iaddl $3, %edx # len<=0 for now, len=len+6 >=0
+  0x0bb: 71f4000000   | 	jle count0 # if len<=0, end; else need to finish the rest
                       | 
-  0x10b:              | restloop:
-  0x10b: 506300000000 | 	mrmovl (%ebx), %esi	# read val from src...
-  0x111: 406100000000 | 	rmmovl %esi, (%ecx)	# ...and store it to dst
-  0x117: 6266         | 	andl %esi, %esi		# val <= 0?
-  0x119: 7124010000   | 	jle Npos		# if so, goto Npos:
-  0x11e: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x0c0:              | restloop:
+  0x0c0: 506300000000 | 	mrmovl (%ebx), %esi	# read val from src...
+  0x0c6: 406100000000 | 	rmmovl %esi, (%ecx)	# ...and store it to dst
+  0x0cc: 6266         | 	andl %esi, %esi		# val <= 0?
+  0x0ce: 71d9000000   | 	jle Npos		# if so, goto Npos:
+  0x0d3: c0f001000000 | 	iaddl $1, %eax		# count++
                       | 
-  0x124: 30f701000000 | Npos:	irmovl $1, %edi
-  0x12a: 6172         | 	subl %edi, %edx		# len--
-  0x12c: c0f304000000 | 	iaddl $4, %ebx		# src++
-  0x132: c0f104000000 | 	iaddl $4, %ecx		# dst++
-  0x138: 6222         | 	andl %edx,%edx		# len > 0?
-  0x13a: 760b010000   | 	jg restloop			# if so, goto Loop:
+  0x0d9: 30f701000000 | Npos:	irmovl $1, %edi
+  0x0df: 6172         | 	subl %edi, %edx		# len--
+  0x0e1: c0f304000000 | 	iaddl $4, %ebx		# src++
+  0x0e7: c0f104000000 | 	iaddl $4, %ecx		# dst++
+  0x0ed: 6222         | 	andl %edx,%edx		# len > 0?
+  0x0ef: 76c0000000   | 	jg restloop			# if so, goto Loop:
                       | 
-  0x13f:              | count0:
+  0x0f4:              | count0:
                       | ##################################################################
                       | # Do not modify the following section of code
                       | # Function epilogue.
-  0x13f:              | Done:
-  0x13f: b07f         | 	popl %edi               # Restore callee-save registers
-  0x141: b03f         | 	popl %ebx
-  0x143: b06f         | 	popl %esi
-  0x145: 2054         | 	rrmovl %ebp, %esp
-  0x147: b05f         | 	popl %ebp
-  0x149: 90           | 	ret
+  0x0f4:              | Done:
+  0x0f4: b07f         | 	popl %edi               # Restore callee-save registers
+  0x0f6: b03f         | 	popl %ebx
+  0x0f8: b06f         | 	popl %esi
+  0x0fa: 2054         | 	rrmovl %ebp, %esp
+  0x0fc: b05f         | 	popl %ebp
+  0x0fe: 90           | 	ret
                       | ##################################################################
                       | # Keep the following label at the end of your function
-  0x14a:              | End:
+  0x0ff:              | End:
                       | #/* $end ncopy-ys */
-  0x14a:              | EndFun:
+  0x0ff:              | EndFun:
                       | 
                       | ###############################
                       | # Source and destination blocks 
                       | ###############################
-  0x14c:              | 	.align 4
-  0x14c:              | src:
-  0x14c: 01000000     | 	.long 1
-  0x150: feffffff     | 	.long -2
-  0x154: fdffffff     | 	.long -3
-  0x158: 04000000     | 	.long 4
-  0x15c: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
+  0x100:              | 	.align 4
+  0x100:              | src:
+  0x100: ffffffff     | 	.long -1
+  0x104: 02000000     | 	.long 2
+  0x108: 03000000     | 	.long 3
+  0x10c: fcffffff     | 	.long -4
+  0x110: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
                       | 
-  0x160:              | 	.align 16
-  0x160:              | Predest:
-  0x160: fadebc00     | 	.long 0xbcdefa
-  0x164:              | dest:
-  0x164: abefcd00     | 	.long 0xcdefab
-  0x168: abefcd00     | 	.long 0xcdefab
-  0x16c: abefcd00     | 	.long 0xcdefab
-  0x170: abefcd00     | 	.long 0xcdefab
-  0x174:              | Postdest:
-  0x174: bcfade00     | 	.long 0xdefabc
+  0x120:              | 	.align 16
+  0x120:              | Predest:
+  0x120: fadebc00     | 	.long 0xbcdefa
+  0x124:              | dest:
+  0x124: abefcd00     | 	.long 0xcdefab
+  0x128: abefcd00     | 	.long 0xcdefab
+  0x12c: abefcd00     | 	.long 0xcdefab
+  0x130: abefcd00     | 	.long 0xcdefab
+  0x134:              | Postdest:
+  0x134: bcfade00     | 	.long 0xdefabc
                       | 
-  0x178:              | .align 4
+  0x138:              | .align 4
                       | # Run time stack
-  0x178: 00000000     | 	.long 0
-  0x17c: 00000000     | 	.long 0
-  0x180: 00000000     | 	.long 0
-  0x184: 00000000     | 	.long 0
-  0x188: 00000000     | 	.long 0
-  0x18c: 00000000     | 	.long 0
-  0x190: 00000000     | 	.long 0
-  0x194: 00000000     | 	.long 0
-  0x198: 00000000     | 	.long 0
-  0x19c: 00000000     | 	.long 0
-  0x1a0: 00000000     | 	.long 0
-  0x1a4: 00000000     | 	.long 0
-  0x1a8: 00000000     | 	.long 0
-  0x1ac: 00000000     | 	.long 0
-  0x1b0: 00000000     | 	.long 0
-  0x1b4: 00000000     | 	.long 0
+  0x138: 00000000     | 	.long 0
+  0x13c: 00000000     | 	.long 0
+  0x140: 00000000     | 	.long 0
+  0x144: 00000000     | 	.long 0
+  0x148: 00000000     | 	.long 0
+  0x14c: 00000000     | 	.long 0
+  0x150: 00000000     | 	.long 0
+  0x154: 00000000     | 	.long 0
+  0x158: 00000000     | 	.long 0
+  0x15c: 00000000     | 	.long 0
+  0x160: 00000000     | 	.long 0
+  0x164: 00000000     | 	.long 0
+  0x168: 00000000     | 	.long 0
+  0x16c: 00000000     | 	.long 0
+  0x170: 00000000     | 	.long 0
+  0x174: 00000000     | 	.long 0
                       | 
-  0x1b8:              | Stack:
+  0x178:              | Stack:
