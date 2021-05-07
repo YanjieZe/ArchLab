@@ -27,57 +27,58 @@ ncopy:	pushl %ebp		# Save old frame pointer
 # You can modify this portion
 	# Loop header
 	xorl %eax,%eax		# count = 0;
-	andl %edx, %edx 	# len<=0?
-	jle count0
-	rrmovl %edx, %edi 	# limit = len
-	iaddl $-6, %edi     # limit = len - 7
-	jle restloop		# if limit<=0, goto rest:
+	iaddl $-6, %edx    # len = len - 6
+	jl restjudge		# if len<0, goto rest:
 
-loop1:	mrmovl (%ebx), %esi # read val from src
-		rmmovl %esi, (%ecx) # store
-		andl %esi, %esi # val <=0?
+loop1:	mrmovl (%ebx), %esi # val1
+		mrmovl 4(%ebx), %edi # val2
+		rmmovl %esi, (%ecx) # store val1
+		andl %esi, %esi # val1 <=0?
 		jle loop2 # if so, go to next loop
 		iaddl $1, %eax # count ++
 
-loop2:	mrmovl 4(%ebx), %esi # read val from src
-		rmmovl %esi, 4(%ecx) # store
-		andl %esi, %esi # val <=0?
+loop2:	mrmovl 8(%ebx), %esi # val1
+		rmmovl %edi, 4(%ecx) # store val2
+		andl %edi, %edi # val2 <=0?
 		jle loop3 # if so, go to next loop
 		iaddl $1, %eax # count ++
 
-loop3:	mrmovl 8(%ebx), %esi # read val from src
-		rmmovl %esi, 8(%ecx) # store
-		andl %esi, %esi # val <=0?
+loop3:	mrmovl 12(%ebx), %edi # val2
+		rmmovl %esi, 8(%ecx) # store val1
+		andl %esi, %esi # val1 <=0?
 		jle loop4 # if so, go to next loop
 		iaddl $1, %eax # count ++
 
-loop4:	mrmovl 12(%ebx), %esi # read val from src
-		rmmovl %esi, 12(%ecx) # store
-		andl %esi, %esi # val <=0?
+loop4:	mrmovl 16(%ebx), %esi # val1
+		rmmovl %edi, 12(%ecx) # store val2
+		andl %edi, %edi # val2 <=0?
 		jle loop5 # if so, go to next loop
 		iaddl $1, %eax # count ++
 
-loop5:	mrmovl 16(%ebx), %esi # read val from src
-		rmmovl %esi, 16(%ecx) # store
-		andl %esi, %esi # val <=0?
+loop5:	mrmovl 20(%ebx), %edi # val2
+		rmmovl %esi, 16(%ecx) # store val1
+		andl %esi, %esi # val1 <=0?
 		jle loop6 # if so, go to next loop
 		iaddl $1, %eax # count ++
 
 
-loop6:	mrmovl 20(%ebx), %esi # read val from src
-		rmmovl %esi, 20(%ecx) # store
-		andl %esi, %esi # val <=0?
+loop6:	
+		rmmovl %edi, 20(%ecx) # store val2
+		andl %edi, %edi # val2 <=0?
 		jle update # if so, go to update, since this is the final loop
 		iaddl $1, %eax # count ++
 
 update: iaddl $24, %ebx # update
 		iaddl $24, %ecx # update
-		rrmovl %edi, %edx # edx = edi(len=limit)
-		iaddl $-6, %edi # limit -= 8
-		jg loop1 # if limit > 0, go to new loop1
+		iaddl $-6, %edx # len -= 6
+		jge loop1 # if len >= 0, go to new loop1
 		
+### rest loop ###
+restjudge:
+	iaddl $6, %edx # len<=0 for now, len=len+6 >=0
+	jle count0 # if len<=0, end; else need to finish the rest
 
-restloop:	
+restloop:
 	mrmovl (%ebx), %esi	# read val from src...
 	rmmovl %esi, (%ecx)	# ...and store it to dst
 	andl %esi, %esi		# val <= 0?

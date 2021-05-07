@@ -44,57 +44,58 @@
                       | # You can modify this portion
                       | 	# Loop header
   0x046: 6300         | 	xorl %eax,%eax		# count = 0;
-  0x048: 6222         | 	andl %edx, %edx 	# len<=0?
-  0x04a: 713f010000   | 	jle count0
-  0x04f: 2027         | 	rrmovl %edx, %edi 	# limit = len
-  0x051: c0f7faffffff | 	iaddl $-6, %edi     # limit = len - 7
-  0x057: 710b010000   | 	jle restloop		# if limit<=0, goto rest:
+  0x048: c0f2faffffff | 	iaddl $-6, %edx    # len = len - 6
+  0x04e: 7200010000   | 	jl restjudge		# if len<0, goto rest:
                       | 
-  0x05c: 506300000000 | loop1:	mrmovl (%ebx), %esi # read val from src
-  0x062: 406100000000 | 		rmmovl %esi, (%ecx) # store
-  0x068: 6266         | 		andl %esi, %esi # val <=0?
-  0x06a: 7175000000   | 		jle loop2 # if so, go to next loop
-  0x06f: c0f001000000 | 		iaddl $1, %eax # count ++
+  0x053: 506300000000 | loop1:	mrmovl (%ebx), %esi # val1
+  0x059: 507304000000 | 		mrmovl 4(%ebx), %edi # val2
+  0x05f: 406100000000 | 		rmmovl %esi, (%ecx) # store val1
+  0x065: 6266         | 		andl %esi, %esi # val1 <=0?
+  0x067: 7172000000   | 		jle loop2 # if so, go to next loop
+  0x06c: c0f001000000 | 		iaddl $1, %eax # count ++
                       | 
-  0x075: 506304000000 | loop2:	mrmovl 4(%ebx), %esi # read val from src
-  0x07b: 406104000000 | 		rmmovl %esi, 4(%ecx) # store
-  0x081: 6266         | 		andl %esi, %esi # val <=0?
-  0x083: 718e000000   | 		jle loop3 # if so, go to next loop
-  0x088: c0f001000000 | 		iaddl $1, %eax # count ++
+  0x072: 506308000000 | loop2:	mrmovl 8(%ebx), %esi # val1
+  0x078: 407104000000 | 		rmmovl %edi, 4(%ecx) # store val2
+  0x07e: 6277         | 		andl %edi, %edi # val2 <=0?
+  0x080: 718b000000   | 		jle loop3 # if so, go to next loop
+  0x085: c0f001000000 | 		iaddl $1, %eax # count ++
                       | 
-  0x08e: 506308000000 | loop3:	mrmovl 8(%ebx), %esi # read val from src
-  0x094: 406108000000 | 		rmmovl %esi, 8(%ecx) # store
-  0x09a: 6266         | 		andl %esi, %esi # val <=0?
-  0x09c: 71a7000000   | 		jle loop4 # if so, go to next loop
-  0x0a1: c0f001000000 | 		iaddl $1, %eax # count ++
+  0x08b: 50730c000000 | loop3:	mrmovl 12(%ebx), %edi # val2
+  0x091: 406108000000 | 		rmmovl %esi, 8(%ecx) # store val1
+  0x097: 6266         | 		andl %esi, %esi # val1 <=0?
+  0x099: 71a4000000   | 		jle loop4 # if so, go to next loop
+  0x09e: c0f001000000 | 		iaddl $1, %eax # count ++
                       | 
-  0x0a7: 50630c000000 | loop4:	mrmovl 12(%ebx), %esi # read val from src
-  0x0ad: 40610c000000 | 		rmmovl %esi, 12(%ecx) # store
-  0x0b3: 6266         | 		andl %esi, %esi # val <=0?
-  0x0b5: 71c0000000   | 		jle loop5 # if so, go to next loop
-  0x0ba: c0f001000000 | 		iaddl $1, %eax # count ++
+  0x0a4: 506310000000 | loop4:	mrmovl 16(%ebx), %esi # val1
+  0x0aa: 40710c000000 | 		rmmovl %edi, 12(%ecx) # store val2
+  0x0b0: 6277         | 		andl %edi, %edi # val2 <=0?
+  0x0b2: 71bd000000   | 		jle loop5 # if so, go to next loop
+  0x0b7: c0f001000000 | 		iaddl $1, %eax # count ++
                       | 
-  0x0c0: 506310000000 | loop5:	mrmovl 16(%ebx), %esi # read val from src
-  0x0c6: 406110000000 | 		rmmovl %esi, 16(%ecx) # store
-  0x0cc: 6266         | 		andl %esi, %esi # val <=0?
-  0x0ce: 71d9000000   | 		jle loop6 # if so, go to next loop
-  0x0d3: c0f001000000 | 		iaddl $1, %eax # count ++
+  0x0bd: 507314000000 | loop5:	mrmovl 20(%ebx), %edi # val2
+  0x0c3: 406110000000 | 		rmmovl %esi, 16(%ecx) # store val1
+  0x0c9: 6266         | 		andl %esi, %esi # val1 <=0?
+  0x0cb: 71d6000000   | 		jle loop6 # if so, go to next loop
+  0x0d0: c0f001000000 | 		iaddl $1, %eax # count ++
                       | 
                       | 
-  0x0d9: 506314000000 | loop6:	mrmovl 20(%ebx), %esi # read val from src
-  0x0df: 406114000000 | 		rmmovl %esi, 20(%ecx) # store
-  0x0e5: 6266         | 		andl %esi, %esi # val <=0?
-  0x0e7: 71f2000000   | 		jle update # if so, go to update, since this is the final loop
-  0x0ec: c0f001000000 | 		iaddl $1, %eax # count ++
+  0x0d6:              | loop6:	
+  0x0d6: 407114000000 | 		rmmovl %edi, 20(%ecx) # store val2
+  0x0dc: 6277         | 		andl %edi, %edi # val2 <=0?
+  0x0de: 71e9000000   | 		jle update # if so, go to update, since this is the final loop
+  0x0e3: c0f001000000 | 		iaddl $1, %eax # count ++
                       | 
-  0x0f2: c0f318000000 | update: iaddl $24, %ebx # update
-  0x0f8: c0f118000000 | 		iaddl $24, %ecx # update
-  0x0fe: 2072         | 		rrmovl %edi, %edx # edx = edi(len=limit)
-  0x100: c0f7faffffff | 		iaddl $-6, %edi # limit -= 8
-  0x106: 765c000000   | 		jg loop1 # if limit > 0, go to new loop1
+  0x0e9: c0f318000000 | update: iaddl $24, %ebx # update
+  0x0ef: c0f118000000 | 		iaddl $24, %ecx # update
+  0x0f5: c0f2faffffff | 		iaddl $-6, %edx # len -= 6
+  0x0fb: 7553000000   | 		jge loop1 # if len >= 0, go to new loop1
                       | 		
+                      | ### rest loop ###
+  0x100:              | restjudge:
+  0x100: c0f206000000 | 	iaddl $6, %edx # len<=0 for now, len=len+6 >=0
+  0x106: 713f010000   | 	jle count0 # if len<=0, end; else need to finish the rest
                       | 
-  0x10b:              | restloop:	
+  0x10b:              | restloop:
   0x10b: 506300000000 | 	mrmovl (%ebx), %esi	# read val from src...
   0x111: 406100000000 | 	rmmovl %esi, (%ecx)	# ...and store it to dst
   0x117: 6266         | 	andl %esi, %esi		# val <= 0?
@@ -131,68 +132,68 @@
   0x14c:              | 	.align 4
   0x14c:              | src:
   0x14c: ffffffff     | 	.long -1
-  0x150: feffffff     | 	.long -2
-  0x154: fdffffff     | 	.long -3
-  0x158: fcffffff     | 	.long -4
-  0x15c: fbffffff     | 	.long -5
+  0x150: 02000000     | 	.long 2
+  0x154: 03000000     | 	.long 3
+  0x158: 04000000     | 	.long 4
+  0x15c: 05000000     | 	.long 5
   0x160: faffffff     | 	.long -6
-  0x164: f9ffffff     | 	.long -7
-  0x168: 08000000     | 	.long 8
+  0x164: 07000000     | 	.long 7
+  0x168: f8ffffff     | 	.long -8
   0x16c: 09000000     | 	.long 9
-  0x170: f6ffffff     | 	.long -10
-  0x174: f5ffffff     | 	.long -11
+  0x170: 0a000000     | 	.long 10
+  0x174: 0b000000     | 	.long 11
   0x178: 0c000000     | 	.long 12
   0x17c: 0d000000     | 	.long 13
   0x180: f2ffffff     | 	.long -14
   0x184: f1ffffff     | 	.long -15
-  0x188: f0ffffff     | 	.long -16
-  0x18c: 11000000     | 	.long 17
+  0x188: 10000000     | 	.long 16
+  0x18c: efffffff     | 	.long -17
   0x190: eeffffff     | 	.long -18
-  0x194: edffffff     | 	.long -19
+  0x194: 13000000     | 	.long 19
   0x198: ecffffff     | 	.long -20
-  0x19c: ebffffff     | 	.long -21
+  0x19c: 15000000     | 	.long 21
   0x1a0: 16000000     | 	.long 22
-  0x1a4: 17000000     | 	.long 23
+  0x1a4: e9ffffff     | 	.long -23
   0x1a8: 18000000     | 	.long 24
   0x1ac: 19000000     | 	.long 25
-  0x1b0: 1a000000     | 	.long 26
-  0x1b4: 1b000000     | 	.long 27
+  0x1b0: e6ffffff     | 	.long -26
+  0x1b4: e5ffffff     | 	.long -27
   0x1b8: e4ffffff     | 	.long -28
   0x1bc: e3ffffff     | 	.long -29
-  0x1c0: e2ffffff     | 	.long -30
+  0x1c0: 1e000000     | 	.long 30
   0x1c4: 1f000000     | 	.long 31
   0x1c8: 20000000     | 	.long 32
   0x1cc: dfffffff     | 	.long -33
   0x1d0: 22000000     | 	.long 34
   0x1d4: ddffffff     | 	.long -35
   0x1d8: 24000000     | 	.long 36
-  0x1dc: 25000000     | 	.long 37
-  0x1e0: 26000000     | 	.long 38
+  0x1dc: dbffffff     | 	.long -37
+  0x1e0: daffffff     | 	.long -38
   0x1e4: 27000000     | 	.long 39
   0x1e8: 28000000     | 	.long 40
   0x1ec: 29000000     | 	.long 41
-  0x1f0: d6ffffff     | 	.long -42
-  0x1f4: d5ffffff     | 	.long -43
+  0x1f0: 2a000000     | 	.long 42
+  0x1f4: 2b000000     | 	.long 43
   0x1f8: d4ffffff     | 	.long -44
-  0x1fc: d3ffffff     | 	.long -45
-  0x200: d2ffffff     | 	.long -46
-  0x204: d1ffffff     | 	.long -47
-  0x208: d0ffffff     | 	.long -48
-  0x20c: 31000000     | 	.long 49
-  0x210: 32000000     | 	.long 50
+  0x1fc: 2d000000     | 	.long 45
+  0x200: 2e000000     | 	.long 46
+  0x204: 2f000000     | 	.long 47
+  0x208: 30000000     | 	.long 48
+  0x20c: cfffffff     | 	.long -49
+  0x210: ceffffff     | 	.long -50
   0x214: cdffffff     | 	.long -51
-  0x218: 34000000     | 	.long 52
+  0x218: ccffffff     | 	.long -52
   0x21c: cbffffff     | 	.long -53
-  0x220: caffffff     | 	.long -54
+  0x220: 36000000     | 	.long 54
   0x224: c9ffffff     | 	.long -55
-  0x228: 38000000     | 	.long 56
-  0x22c: 39000000     | 	.long 57
-  0x230: 3a000000     | 	.long 58
-  0x234: 3b000000     | 	.long 59
-  0x238: 3c000000     | 	.long 60
-  0x23c: 3d000000     | 	.long 61
-  0x240: 3e000000     | 	.long 62
-  0x244: 3f000000     | 	.long 63
+  0x228: c8ffffff     | 	.long -56
+  0x22c: c7ffffff     | 	.long -57
+  0x230: c6ffffff     | 	.long -58
+  0x234: c5ffffff     | 	.long -59
+  0x238: c4ffffff     | 	.long -60
+  0x23c: c3ffffff     | 	.long -61
+  0x240: c2ffffff     | 	.long -62
+  0x244: c1ffffff     | 	.long -63
   0x248: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
                       | 
   0x250:              | 	.align 16
