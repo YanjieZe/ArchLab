@@ -172,7 +172,6 @@ int aluB = [
 ## Set the ALU function
 int alufun = [
 	icode == IOPL : ifun;
-	icode == IIADDL : ALUADD;
 	1 : ALUADD;
 ];
 
