@@ -27,6 +27,7 @@ main:
 # int copy_block(int *src, int *dest, int len)
 # src in %edi, dest in %esi, len in %edx
 copy_block:
+        pushl %ebp                  # Save callee-saved registers
         pushl %ebx
         irmovl $4, %ecx             # Save constant 4 since Y86 only supports addition and substraction on registers
         irmovl $1, %ebx             # Save constant 1
@@ -42,7 +43,8 @@ loop:
 test:
         andl %edx, %edx             # Judge on len
         jne loop                    # Stop when len = 0
-        popl %ebx
+        popl %ebx                   # Resume callee-saved registers
+        popl %ebp
         ret
 
 # Stack starts here and grows to lower address
