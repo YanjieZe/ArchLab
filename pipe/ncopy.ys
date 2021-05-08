@@ -1,7 +1,7 @@
 # Yanjie Ze 519021910706
-# score: 60/60, 8.94
+# score: 60/60, 8.93 (recent 10 tests: 8.92x7, 8.93x2, 8.91x1)
 # idea: loop unrolling 6 times + solving load use hazard 
-# + binary search
+# + binary search + jumps rearrangement according to AT
 
 #/* $begin ncopy-ys */
 ##################################################################
@@ -74,18 +74,23 @@ iaddl $-6, %edx # len -= 6
 jge loop1 # if len >= 0, go to new loop1
 ### rest loop ###
 # binary search
+# (Tang commented: always taken strategy, 
+# suppose the data is uniformly distributed,
+# therefore rearranged the jumps)
 restjudge:
 	iaddl $3, %edx
 	jl searchleft
-	je restloop3
+	jg searchright
+	jmp restloop3
+searchright:
 	iaddl $-1, %edx
 	je restloop4
 	jmp restloop5
 searchleft:
 	iaddl $2, %edx
 	je restloop1
-	jl Done
-	jmp restloop2
+	jg restloop2
+	jmp Done
 
 
 ### search finish ###
