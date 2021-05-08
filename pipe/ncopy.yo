@@ -1,6 +1,11 @@
                       | # Yanjie Ze 519021910706
+<<<<<<< HEAD
                       | # score: 60/60, 
                       | # idea: loop unrolling 8 times + solving load use hazard 
+=======
+                      | # score: 60/60, 9.21
+                      | # idea: loop unrolling 6 times + solving load use hazard 
+>>>>>>> 122ca8d04becd7a02e946696c0d38444f953cb26
                       | #		+ binary search
                       | 
                       | #/* $begin ncopy-ys */

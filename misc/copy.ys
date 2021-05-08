@@ -1,0 +1,50 @@
+# Referencing Fig. 4-7 in CS:APP
+# Execution begins at address 0
+        .pos 0
+        irmovl stack, %esp          # Set up stack pointer
+        call main                   # Execute main program
+        halt                        # Terminate program
+
+        .align 4
+# Source block
+src:
+        .long 0x00a
+        .long 0x0b0
+        .long 0xc00
+# Destination block
+dest:
+        .long 0x111
+        .long 0x222
+        .long 0x333
+
+main:
+        irmovl src, %edi            # Set src as the first param
+        irmovl dest, %esi           # Set dest as the second param
+        irmovl $3, %edx             # Set 3 as the third param
+        call copy_block             # copy_block(src, dest, 3)
+        ret
+
+# int copy_block(int *src, int *dest, int len)
+# src in %edi, dest in %esi, len in %edx
+copy_block:
+        pushl %ebx
+        irmovl $4, %ecx             # Save constant 4 since Y86 only supports addition and substraction on registers
+        irmovl $1, %ebx             # Save constant 1
+        xorl %eax, %eax             # int result = 0;
+        jmp test
+loop:
+        mrmovl (%edi), %ebp         # int val = *src;
+        addl %ecx, %edi             # src++;
+        rmmovl %ebp, (%esi)         # *dest = val;
+        addl %ecx, %esi             # dest++;
+        xorl %ebp, %eax             # result ^= val;
+        subl %ebx, %edx             # len--;
+test:
+        andl %edx, %edx             # Judge on len
+        jne loop                    # Stop when len = 0
+        popl %ebx
+        ret
+
+# Stack starts here and grows to lower address
+        .pos 0x200
+stack:
