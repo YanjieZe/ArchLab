@@ -1,0 +1,41 @@
+# Referencing Fig. 4-7 in CS:APP
+# Execution begins at address 0
+        .pos 0
+        irmovl stack, %esp          # Set up stack pointer
+        call main                   # Execute main program
+        halt                        # Terminate program
+
+# Sample linked list
+        .align 4
+ele1:
+        .long 0x00a
+        .long ele2
+ele2:
+        .long 0x0b0
+        .long ele3
+ele3:
+        .long 0xc00
+        .long 0
+
+main:
+        irmovl ele1, %edi           # Set ele1 as the first param
+        call sum_list               # sum_list(ele1)
+        ret
+
+# int sum_list(list_ptr ls)
+# ls in %edi
+sum_list:
+        xorl %eax, %eax             # int val = 0;
+        jmp test
+loop:
+        mrmovl (%edi), %ebp         # Get ls->val
+        addl %ebp, %eax              # val += ls->val;
+        mrmovl 4(%edi), %edi        # ls = ls->next;          
+test:
+        andl %edi, %edi             # Judge on ls
+        jne loop                    # Stop when %rdi is zero
+        ret
+
+# Stack starts here and grows to lower address
+        .pos 0x200
+stack:
