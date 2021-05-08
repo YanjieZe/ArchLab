@@ -25,15 +25,17 @@ main:
 # int sum_list(list_ptr ls)
 # ls in %edi
 sum_list:
+        pushl %ebp                  # Save the callee-saved register
         xorl %eax, %eax             # int val = 0;
         jmp test
 loop:
         mrmovl (%edi), %ebp         # Get ls->val
-        addl %ebp, %eax              # val += ls->val;
+        addl %ebp, %eax             # val += ls->val;
         mrmovl 4(%edi), %edi        # ls = ls->next;          
 test:
         andl %edi, %edi             # Judge on ls
         jne loop                    # Stop when %rdi is zero
+        popl %ebp                   # Resume the callee-saved register
         ret
 
 # Stack starts here and grows to lower address
