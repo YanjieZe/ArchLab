@@ -16,9 +16,9 @@ main:	irmovl Stack, %esp  	# Set up stack pointer
 	halt			# should halt with num nonzeros in %eax
 StartFun:
 # Yanjie Ze 519021910706
-# score: 60/60, 
-# idea: loop unrolling 8 times + solving load use hazard 
-#		+ binary search
+# score: 60/60, 9.21
+# idea: loop unrolling 6 times + solving load use hazard 
+# + binary search
 
 #/* $begin ncopy-ys */
 ##################################################################
@@ -32,296 +32,191 @@ StartFun:
 ##################################################################
 # Do not modify this portion
 # Function prologue.
-ncopy:	pushl %ebp		# Save old frame pointer
-	rrmovl %esp,%ebp	# Set up new frame pointer
-	pushl %esi		# Save callee-save regs
-	pushl %ebx
-	pushl %edi
-	mrmovl 8(%ebp),%ebx	# src
-	mrmovl 16(%ebp),%edx	# len
-	mrmovl 12(%ebp),%ecx	# dst
+ncopy: pushl %ebp # Save old frame pointer
+rrmovl %esp,%ebp # Set up new frame pointer
+pushl %esi # Save callee-save regs
+pushl %ebx
+pushl %edi
+mrmovl 8(%ebp),%ebx # src
+mrmovl 16(%ebp),%edx # len
+mrmovl 12(%ebp),%ecx # dst
 
 ##################################################################
 # You can modify this portion
-	# Loop header
-	xorl %eax,%eax		# count = 0;
-	iaddl $-8, %edx    # len = len - 6
-	jl restjudge		# if len<0, goto rest:
+# Loop header
+xorl %eax,%eax # count = 0;
+iaddl $-6, %edx # len = len - 6
+jl restjudge # if len<0, goto rest:
 
-loop1:	mrmovl (%ebx), %esi # val1
-		mrmovl 4(%ebx), %edi # val2
-		rmmovl %esi, (%ecx) # store val1
-		andl %esi, %esi # val1 <=0?
-		jle loop2 # if so, go to next loop
-		iaddl $1, %eax # count ++
+loop1: mrmovl (%ebx), %esi # val1
+mrmovl 4(%ebx), %edi # val2
+rmmovl %esi, (%ecx) # store val1
+andl %esi, %esi # val1 <=0?
+jle loop2 # if so, go to next loop
+iaddl $1, %eax # count ++
 
-loop2:	mrmovl 8(%ebx), %esi # val1
-		rmmovl %edi, 4(%ecx) # store val2
-		andl %edi, %edi # val2 <=0?
-		jle loop3 # if so, go to next loop
-		iaddl $1, %eax # count ++
+loop2: mrmovl 8(%ebx), %esi # val1
+rmmovl %edi, 4(%ecx) # store val2
+andl %edi, %edi # val2 <=0?
+jle loop3 # if so, go to next loop
+iaddl $1, %eax # count ++
 
-loop3:	mrmovl 12(%ebx), %edi # val2
-		rmmovl %esi, 8(%ecx) # store val1
-		andl %esi, %esi # val1 <=0?
-		jle loop4 # if so, go to next loop
-		iaddl $1, %eax # count ++
+loop3: mrmovl 12(%ebx), %edi # val2
+rmmovl %esi, 8(%ecx) # store val1
+andl %esi, %esi # val1 <=0?
+jle loop4 # if so, go to next loop
+iaddl $1, %eax # count ++
 
-loop4:	mrmovl 16(%ebx), %esi # val1
-		rmmovl %edi, 12(%ecx) # store val2
-		andl %edi, %edi # val2 <=0?
-		jle loop5 # if so, go to next loop
-		iaddl $1, %eax # count ++
+loop4: mrmovl 16(%ebx), %esi # val1
+rmmovl %edi, 12(%ecx) # store val2
+andl %edi, %edi # val2 <=0?
+jle loop5 # if so, go to next loop
+iaddl $1, %eax # count ++
 
+loop5: mrmovl 20(%ebx), %edi # val2
+rmmovl %esi, 16(%ecx) # store val1
+andl %esi, %esi # val1 <=0?
+jle loop6 # if so, go to next loop
+iaddl $1, %eax # count ++
 
-loop5:	mrmovl 20(%ebx), %edi # val2
-		rmmovl %esi, 16(%ecx) # store val1
-		andl %esi, %esi # val1 <=0?
-		jle loop6 # if so, go to next loop
-		iaddl $1, %eax # count ++
+loop6: 
+rmmovl %edi, 20(%ecx) # store val2
+andl %edi, %edi # val2 <=0?
+jle update # if so, go to update, since this is the final loop
+iaddl $1, %eax # count ++
 
-loop6:	mrmovl 24(%ebx), %esi # val1
-		rmmovl %edi, 20(%ecx) # store val2
-		andl %edi, %edi # val2 <=0?
-		jle loop7 # if so, go to next loop
-		iaddl $1, %eax # count ++
-
-loop7:	mrmovl 28(%ebx), %edi # val2
-		rmmovl %esi, 24(%ecx) # store val1
-		andl %esi, %esi # val1 <=0?
-		jle loop8 # if so, go to next loop
-		iaddl $1, %eax # count ++
-
-
-loop8:	
-		rmmovl %edi, 28(%ecx) # store val2
-		andl %edi, %edi # val2 <=0?
-		jle update # if so, go to update, since this is the final loop
-		iaddl $1, %eax # count ++
-
-update: iaddl $32, %ebx # update
-		iaddl $32, %ecx # update
-		iaddl $-8, %edx # len -= 6
-		jge loop1 # if len >= 0, go to new loop1
-		
+update: iaddl $24, %ebx # update
+iaddl $24, %ecx # update
+iaddl $-6, %edx # len -= 6
+jge loop1 # if len >= 0, go to new loop1
 ### rest loop ###
+# binary search
 restjudge:
-	iaddl $8, %edx # len<=0 before, len=len+6 >=0 now
-	jle count0 # if len<=0, end; else need to finish the rest
+	iaddl $3, %edx
+	jl searchleft
+	je restloop3
+	iaddl $-1, %edx
+	je restloop4
+	jmp restloop5
+searchleft:
+	iaddl $2, %edx
+	je restloop1
+	jl Done
+	jmp restloop2
 
-searchmid:# possible value: 1,2,3,4,5, 6, 7
-	iaddl $-4, %edx # sub 4: -3,-2,-1,0,1,2,3
-	je restloop4 # len = 4, jump
-	jl searchleft # len < 4, jump
-
-searchright:# possible value: 1,2,3(5,6,7)
-	iaddl $-2, %edx
-	je restloop6
-	jg restloop7
-	jl restloop5
-
-searchleft: # possible value: -3,-2,-1(1,2,3)
-	iaddl $2, %edx # -1,0,1
-	je restloop2
-	jg restloop3
-	jl restloop1
 
 ### search finish ###
 ### begin unrolling ###
-restloop1: 	mrmovl (%ebx), %esi 
-			rmmovl %esi, (%ecx)
-			andl %esi, %esi
-			jle Done # finish
-			iaddl $1, %eax 
-			jmp Done
+restloop1: mrmovl (%ebx), %esi 
+rmmovl %esi, (%ecx)
+andl %esi, %esi
+jle Done # finish
+iaddl $1, %eax 
+jmp Done
 
-restloop2:  mrmovl (%ebx), %esi # val1
-		    mrmovl 4(%ebx), %edi # val2
-			rmmovl %esi, (%ecx) # store val1
-			andl %esi, %esi # val1 <=0?
-			jle restloop21 # if so, go to next loop
-			iaddl $1, %eax # count ++
+restloop2: mrmovl (%ebx), %esi # val1
+mrmovl 4(%ebx), %edi # val2
+rmmovl %esi, (%ecx) # store val1
+andl %esi, %esi # val1 <=0?
+jle restloop21 # if so, go to next loop
+iaddl $1, %eax # count ++
 
 restloop21: rmmovl %edi, 4(%ecx)
-			andl %edi, %edi
-			jle Done
-			iaddl $1, %eax
-			jmp Done
+andl %edi, %edi
+jle Done
+iaddl $1, %eax
+jmp Done
 
-restloop3:  mrmovl (%ebx), %esi # val1
-			mrmovl 4(%ebx), %edi # val2
-			rmmovl %esi, (%ecx) # store val1
-			andl %esi, %esi # val1 <=0?
-			jle restloop31 # if so, go to next loop
-			iaddl $1, %eax # count ++
+restloop3: mrmovl (%ebx), %esi # val1
+mrmovl 4(%ebx), %edi # val2
+rmmovl %esi, (%ecx) # store val1
+andl %esi, %esi # val1 <=0?
+jle restloop31 # if so, go to next loop
+iaddl $1, %eax # count ++
 
 restloop31: rmmovl %edi, 4(%ecx) # store val2
-			mrmovl 8(%ebx), %esi #val1
-			andl %edi, %edi
-			jle restloop32
-			iaddl $1, %eax
+mrmovl 8(%ebx), %esi #val1
+andl %edi, %edi
+jle restloop32
+iaddl $1, %eax
 
 restloop32: rmmovl %esi, 8(%ecx)
-			andl %esi, %esi
-			jle Done
-			iaddl $1, %eax
-			jmp Done
+andl %esi, %esi
+jle Done
+iaddl $1, %eax
+jmp Done
 
-restloop4:  mrmovl (%ebx), %esi # val1
-		    mrmovl 4(%ebx), %edi # val2
-			rmmovl %esi, (%ecx) # store val1
-			andl %esi, %esi # val1 <=0?
-			jle restloop41 # if so, go to next loop
-			iaddl $1, %eax # count ++
+restloop4: mrmovl (%ebx), %esi # val1
+mrmovl 4(%ebx), %edi # val2
+rmmovl %esi, (%ecx) # store val1
+andl %esi, %esi # val1 <=0?
+jle restloop41 # if so, go to next loop
+iaddl $1, %eax # count ++
 
 restloop41: rmmovl %edi, 4(%ecx) # store val2
-			mrmovl 8(%ebx), %esi #val1
-			andl %edi, %edi
-			jle restloop42
-			iaddl $1, %eax
+mrmovl 8(%ebx), %esi #val1
+andl %edi, %edi
+jle restloop42
+iaddl $1, %eax
 
 restloop42: rmmovl %esi, 8(%ecx) # store val1
-			mrmovl 12(%ebx), %edi #val2
-			andl %esi, %esi
-			jle restloop43
-			iaddl $1, %eax
+mrmovl 12(%ebx), %edi #val2
+andl %esi, %esi
+jle restloop43
+iaddl $1, %eax
 
 restloop43: rmmovl %edi, 12(%ecx)
-			andl %edi, %edi
-			jle Done
-			iaddl $1, %eax
-			jmp Done
+andl %edi, %edi
+jle Done
+iaddl $1, %eax
+jmp Done
 
-restloop5:  mrmovl (%ebx), %esi # val1
-		    mrmovl 4(%ebx), %edi # val2
-			rmmovl %esi, (%ecx) # store val1
-			andl %esi, %esi # val1 <=0?
-			jle restloop51 # if so, go to next loop
-			iaddl $1, %eax # count ++
+restloop5: mrmovl (%ebx), %esi # val1
+mrmovl 4(%ebx), %edi # val2
+rmmovl %esi, (%ecx) # store val1
+andl %esi, %esi # val1 <=0?
+jle restloop51 # if so, go to next loop
+iaddl $1, %eax # count ++
 
 restloop51: rmmovl %edi, 4(%ecx) # store val2
-			mrmovl 8(%ebx), %esi #val1
-			andl %edi, %edi
-			jle restloop52
-			iaddl $1, %eax
+mrmovl 8(%ebx), %esi #val1
+andl %edi, %edi
+jle restloop52
+iaddl $1, %eax
 
 restloop52: rmmovl %esi, 8(%ecx) # store val1
-			mrmovl 12(%ebx), %edi #val2
-			andl %esi, %esi
-			jle restloop53
-			iaddl $1, %eax
+mrmovl 12(%ebx), %edi #val2
+andl %esi, %esi
+jle restloop53
+iaddl $1, %eax
 
 restloop53: rmmovl %edi, 12(%ecx) 
-			mrmovl 16(%ebx), %esi 
-			andl %edi, %edi
-			jle restloop54
-			iaddl $1, %eax
+mrmovl 16(%ebx), %esi 
+andl %edi, %edi
+jle restloop54
+iaddl $1, %eax
 
 restloop54: rmmovl %esi, 16(%ecx)
-			andl %esi, %esi
-			jle Done
-			iaddl $1, %eax
-			jmp Done
-
-restloop6:  mrmovl (%ebx), %esi # val1
-		    mrmovl 4(%ebx), %edi # val2
-			rmmovl %esi, (%ecx) # store val1
-			andl %esi, %esi # val1 <=0?
-			jle restloop61 # if so, go to next loop
-			iaddl $1, %eax # count ++
-
-restloop61: rmmovl %edi, 4(%ecx) # store val2
-			mrmovl 8(%ebx), %esi #val1
-			andl %edi, %edi
-			jle restloop62
-			iaddl $1, %eax
-
-
-restloop62: rmmovl %esi, 8(%ecx) # store val1
-			mrmovl 12(%ebx), %edi #val2
-			andl %esi, %esi
-			jle restloop63
-			iaddl $1, %eax
-
-restloop63: rmmovl %edi, 12(%ecx) # store val2
-			mrmovl 16(%ebx), %esi #val1
-			andl %edi, %edi
-			jle restloop64
-			iaddl $1, %eax
-
-restloop64: rmmovl %esi, 16(%ecx) # store val1
-			mrmovl 20(%ebx), %edi #val2
-			andl %esi, %esi
-			jle restloop65
-			iaddl $1, %eax
-
-restloop65: rmmovl %edi, 20(%ecx)
-			andl %edi, %edi
-			jle Done
-			iaddl $1, %eax
-			jmp Done
-
-
-restloop7:  mrmovl (%ebx), %esi # val1
-		    mrmovl 4(%ebx), %edi # val2
-			rmmovl %esi, (%ecx) # store val1
-			andl %esi, %esi # val1 <=0?
-			jle restloop71 # if so, go to next loop
-			iaddl $1, %eax # count ++
-
-restloop71: rmmovl %edi, 4(%ecx) # store val2
-			mrmovl 8(%ebx), %esi #val1
-			andl %edi, %edi
-			jle restloop72
-			iaddl $1, %eax
-
-restloop72: rmmovl %esi, 8(%ecx) # store val1
-			mrmovl 12(%ebx), %edi #val2
-			andl %esi, %esi
-			jle restloop73
-			iaddl $1, %eax
-
-restloop73: rmmovl %edi, 12(%ecx) # store val2
-			mrmovl 16(%ebx), %esi #val1
-			andl %edi, %edi
-			jle restloop74
-			iaddl $1, %eax
-
-restloop74: rmmovl %esi, 16(%ecx) # store val1
-			mrmovl 20(%ebx), %edi #val2
-			andl %esi, %esi
-			jle restloop75
-			iaddl $1, %eax
-
-restloop75: rmmovl %edi, 20(%ecx) 
-			mrmovl 24(%ebx), %esi 
-			andl %edi, %edi
-			jle restloop76
-			iaddl $1, %eax
-
-restloop76: rmmovl %esi, 24(%ecx)
-			andl %esi, %esi
-			jle Done
-			iaddl $1, %eax
-			jmp Done
-
-###
-count0:
+andl %esi, %esi
+jle Done
+iaddl $1, %eax
+jmp Done
 
 ##################################################################
 # Do not modify the following section of code
 # Function epilogue.
 Done:
-	popl %edi               # Restore callee-save registers
-	popl %ebx
-	popl %esi
-	rrmovl %ebp, %esp
-	popl %ebp
-	ret
+popl %edi # Restore callee-save registers
+popl %ebx
+popl %esi
+rrmovl %ebp, %esp
+popl %ebp
+ret
 ##################################################################
 # Keep the following label at the end of your function
 End:
 #/* $end ncopy-ys */
+
 EndFun:
 
 ###############################
@@ -329,9 +224,9 @@ EndFun:
 ###############################
 	.align 4
 src:
-	.long 1
+	.long -1
 	.long 2
-	.long -3
+	.long 3
 	.long -4
 	.long 0xbcdefa # This shouldn't get moved
 

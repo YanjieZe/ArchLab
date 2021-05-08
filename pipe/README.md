@@ -78,4 +78,6 @@ The best file is **V12**.
 We first start to modify V9(unroll 6)
 unroll 6, 684byte, score: 60/60, CPE 9.21(V14)
 
-unroll 8, 1079bytes,(overflow!) score: 60/60, CPE 9,20(V15)
+unroll 8, 1079bytes,(overflow!) score: 60/60, CPE 9.20(V15)
+
+improve binary search, score: 60/60, CPE (V16)
