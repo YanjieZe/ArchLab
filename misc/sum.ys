@@ -1,4 +1,4 @@
-# Referencing Fig. 4-7 in CS:APP
+# Yanjie Ze 519021910706
 # Execution begins at address 0
         .pos 0
         irmovl stack, %esp          # Set up stack pointer
