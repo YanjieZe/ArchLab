@@ -1,0 +1,113 @@
+    # Preamble.  Initialize memory and registers
+    irmovl $0xf5,%eax
+    irmovl $0,%ebp
+    rmmovl %eax,0xf0(%ebp)
+    irmovl $0xf7,%eax
+    rmmovl %eax,0xf4(%ebp)
+    irmovl $0xfb,%eax
+    rmmovl %eax,0xf8(%ebp)
+    irmovl $0xff,%eax
+    rmmovl %eax,0xfc(%ebp)
+    irmovl $0x100,%ebp
+    irmovl $0x10c,%esp
+    xorl %eax,%eax      # Set Z condition code
+    irmovl $0x80,%eax
+    # Test 4 instruction sequence
+    addl   %eax,%ebp
+    nop
+    nop
+    addl   %ebp,%eax
+    # Put in another instruction
+    rrmovl %esp,%ebp
+    # Complete
+    halt
+
+.pos 0x08
+     .long pos01
+     .long pos02
+     .long pos03
+     .long pos04
+     .long pos05
+     .long pos06
+pos01:
+     halt
+pos02:
+     halt
+pos03:
+     halt
+pos04:
+     halt
+pos05:
+     halt
+pos06:
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+     halt
+
+.pos 0x100
+    .long pos11
+    .long pos12
+    .long pos13
+    .long pos14
+    .long pos15
+    .long pos16
+pos11:
+    halt
+pos12:
+    halt
+pos13:
+    halt
+pos14:
+    halt
+pos15:
+    halt
+pos16:
+    halt
+    halt
+    halt
+    halt
+    halt
+    halt
+    halt
+    halt
+    halt
+
+.pos 0x180
+    .long pos21
+    .long pos22
+    .long pos23
+    .long pos24
+    .long pos25
+    .long pos26
+pos21:
+    halt
+pos22:
+    halt
+pos23:
+    halt
+pos24:
+    halt
+pos25:
+    halt
+pos26:
+    halt
+    halt
+    halt
+    halt
+    halt
+    halt
+    halt
+    halt
+    halt

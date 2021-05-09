@@ -16,7 +16,7 @@
   0x029: 00           | 	halt			# should halt with num nonzeros in %eax
   0x02a:              | StartFun:
                       | # Yanjie Ze 519021910706
-                      | # score: 60/60, 9.21
+                      | # score: 60/60, 8.94
                       | # idea: loop unrolling 6 times + solving load use hazard 
                       | # + binary search
                       | 
@@ -224,9 +224,9 @@
                       | ###############################
   0x2d0:              | 	.align 4
   0x2d0:              | src:
-  0x2d0: ffffffff     | 	.long -1
+  0x2d0: 01000000     | 	.long 1
   0x2d4: 02000000     | 	.long 2
-  0x2d8: 03000000     | 	.long 3
+  0x2d8: fdffffff     | 	.long -3
   0x2dc: fcffffff     | 	.long -4
   0x2e0: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
                       | 

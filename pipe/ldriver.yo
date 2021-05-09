@@ -16,7 +16,7 @@
   0x029: 00           | 	halt			# should halt with num nonzeros in %eax
   0x02a:              | StartFun:
                       | # Yanjie Ze 519021910706
-                      | # score: 60/60, 9.21
+                      | # score: 60/60, 8.94
                       | # idea: loop unrolling 6 times + solving load use hazard 
                       | # + binary search
                       | 
@@ -226,67 +226,67 @@
   0x2d0:              | src:
   0x2d0: ffffffff     | 	.long -1
   0x2d4: 02000000     | 	.long 2
-  0x2d8: fdffffff     | 	.long -3
+  0x2d8: 03000000     | 	.long 3
   0x2dc: fcffffff     | 	.long -4
   0x2e0: 05000000     | 	.long 5
   0x2e4: faffffff     | 	.long -6
-  0x2e8: f9ffffff     | 	.long -7
-  0x2ec: f8ffffff     | 	.long -8
-  0x2f0: 09000000     | 	.long 9
-  0x2f4: f6ffffff     | 	.long -10
+  0x2e8: 07000000     | 	.long 7
+  0x2ec: 08000000     | 	.long 8
+  0x2f0: f7ffffff     | 	.long -9
+  0x2f4: 0a000000     | 	.long 10
   0x2f8: 0b000000     | 	.long 11
   0x2fc: 0c000000     | 	.long 12
-  0x300: f3ffffff     | 	.long -13
-  0x304: 0e000000     | 	.long 14
-  0x308: 0f000000     | 	.long 15
-  0x30c: f0ffffff     | 	.long -16
+  0x300: 0d000000     | 	.long 13
+  0x304: f2ffffff     | 	.long -14
+  0x308: f1ffffff     | 	.long -15
+  0x30c: 10000000     | 	.long 16
   0x310: 11000000     | 	.long 17
-  0x314: eeffffff     | 	.long -18
-  0x318: 13000000     | 	.long 19
+  0x314: 12000000     | 	.long 18
+  0x318: edffffff     | 	.long -19
   0x31c: 14000000     | 	.long 20
   0x320: ebffffff     | 	.long -21
   0x324: 16000000     | 	.long 22
-  0x328: e9ffffff     | 	.long -23
+  0x328: 17000000     | 	.long 23
   0x32c: 18000000     | 	.long 24
   0x330: 19000000     | 	.long 25
-  0x334: e6ffffff     | 	.long -26
-  0x338: 1b000000     | 	.long 27
-  0x33c: 1c000000     | 	.long 28
-  0x340: 1d000000     | 	.long 29
-  0x344: e2ffffff     | 	.long -30
-  0x348: 1f000000     | 	.long 31
-  0x34c: e0ffffff     | 	.long -32
-  0x350: dfffffff     | 	.long -33
-  0x354: 22000000     | 	.long 34
+  0x334: 1a000000     | 	.long 26
+  0x338: e5ffffff     | 	.long -27
+  0x33c: e4ffffff     | 	.long -28
+  0x340: e3ffffff     | 	.long -29
+  0x344: 1e000000     | 	.long 30
+  0x348: e1ffffff     | 	.long -31
+  0x34c: 20000000     | 	.long 32
+  0x350: 21000000     | 	.long 33
+  0x354: deffffff     | 	.long -34
   0x358: 23000000     | 	.long 35
-  0x35c: dcffffff     | 	.long -36
+  0x35c: 24000000     | 	.long 36
   0x360: dbffffff     | 	.long -37
   0x364: 26000000     | 	.long 38
-  0x368: 27000000     | 	.long 39
+  0x368: d9ffffff     | 	.long -39
   0x36c: d8ffffff     | 	.long -40
   0x370: d7ffffff     | 	.long -41
-  0x374: d6ffffff     | 	.long -42
-  0x378: d5ffffff     | 	.long -43
+  0x374: 2a000000     | 	.long 42
+  0x378: 2b000000     | 	.long 43
   0x37c: d4ffffff     | 	.long -44
-  0x380: 2d000000     | 	.long 45
+  0x380: d3ffffff     | 	.long -45
   0x384: d2ffffff     | 	.long -46
-  0x388: 2f000000     | 	.long 47
+  0x388: d1ffffff     | 	.long -47
   0x38c: d0ffffff     | 	.long -48
   0x390: cfffffff     | 	.long -49
-  0x394: ceffffff     | 	.long -50
+  0x394: 32000000     | 	.long 50
   0x398: 33000000     | 	.long 51
-  0x39c: 34000000     | 	.long 52
+  0x39c: ccffffff     | 	.long -52
   0x3a0: cbffffff     | 	.long -53
-  0x3a4: 36000000     | 	.long 54
+  0x3a4: caffffff     | 	.long -54
   0x3a8: c9ffffff     | 	.long -55
-  0x3ac: 38000000     | 	.long 56
+  0x3ac: c8ffffff     | 	.long -56
   0x3b0: c7ffffff     | 	.long -57
-  0x3b4: 3a000000     | 	.long 58
-  0x3b8: 3b000000     | 	.long 59
-  0x3bc: 3c000000     | 	.long 60
-  0x3c0: c3ffffff     | 	.long -61
+  0x3b4: c6ffffff     | 	.long -58
+  0x3b8: c5ffffff     | 	.long -59
+  0x3bc: c4ffffff     | 	.long -60
+  0x3c0: 3d000000     | 	.long 61
   0x3c4: 3e000000     | 	.long 62
-  0x3c8: c1ffffff     | 	.long -63
+  0x3c8: 3f000000     | 	.long 63
   0x3cc: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
                       | 
   0x3d0:              | 	.align 16

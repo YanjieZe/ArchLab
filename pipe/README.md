@@ -80,4 +80,4 @@ unroll 6, 684byte, score: 60/60, CPE 9.21(V14)
 
 unroll 8, 1079bytes,(overflow!) score: 60/60, CPE 9.20(V15)
 
-improve binary search, score: 60/60, CPE (V16)
+improve binary search, score: 60/60, CPE 8.94(V16)

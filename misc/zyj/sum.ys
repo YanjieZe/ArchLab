@@ -1,0 +1,44 @@
+# Yanjie Ze 519021910706
+.pos 0
+irmovl stack, %esp
+call main
+halt
+
+.align 4
+ele1:
+    .long 0x00a
+    .long ele2
+ele2:
+    .long 0x0b0
+    .long ele3
+ele3:
+    .long 0xc00
+    .long 0
+
+main:
+    irmovl ele1, %edi # use %rdi to store the head node
+    call sum   # int sum_list(list_ptr ls)
+    ret
+
+# int sum_list(list_ptr ls)
+sum:
+    xorl %eax, %eax # sum=0
+    rrmovl %edi, %ecx # ls = rcx = rdi, used as tmp node
+    irmovl 0, %ebx # rbx = constant 0
+    jmp test
+
+
+loop:
+    mrmovl (%ecx), %edx  #  edx= val
+    addl %edx, %eax # sum += val
+    mrmovl 4(%ecx), %ecx # ls = ls->next
+    jmp test
+
+test:
+    addl %ebx, %ecx # if rdi!=0, ZF=0 
+    jne loop
+    ret
+
+.pos 0x400
+stack:
+

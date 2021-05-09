@@ -1,0 +1,8 @@
+	    irmovl $32, %edx
+	    nop
+	    nop
+	    nop
+            iaddl $-32, %edx
+	    nop
+	    nop
+	    halt

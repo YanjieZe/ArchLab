@@ -16,7 +16,7 @@ main:	irmovl Stack, %esp  	# Set up stack pointer
 	halt			# should halt with num nonzeros in %eax
 StartFun:
 # Yanjie Ze 519021910706
-# score: 60/60, 9.21
+# score: 60/60, 8.94
 # idea: loop unrolling 6 times + solving load use hazard 
 # + binary search
 
@@ -224,9 +224,9 @@ EndFun:
 ###############################
 	.align 4
 src:
-	.long -1
+	.long 1
 	.long 2
-	.long 3
+	.long -3
 	.long -4
 	.long 0xbcdefa # This shouldn't get moved
 

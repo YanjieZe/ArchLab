@@ -1,0 +1,45 @@
+.pos 0
+irmovl stack, %esp
+call main
+halt
+
+.align 4
+# Source block 
+src:
+.long 0x00a
+.long 0x0b0
+.long 0xc00
+# Destination block 
+dest:
+.long 0x111
+.long 0x222
+.long 0x333
+
+main:
+    irmovl src, %eax # src
+    irmovl dest, %ebx # dest
+    irmovl $3, %edx # len
+    xorl %esi, %esi # result
+    irmovl $0, %edi
+    call copy
+    ret
+
+copy:
+    addl %edi, %edx
+    jne copyprocess
+    ret
+
+copyprocess:
+    mrmovl (%eax), %ebp
+    irmovl $4, %edi
+    addl %edi, %eax
+    rmmovl %ebp, (%ebx)
+    addl %edi, %ebx
+    xorl %ebp, %esi
+    irmovl $1, %edi
+    subl %edi, %edx
+    irmovl $0, %edi
+    jmp copy
+    
+.pos 0x400
+stack:

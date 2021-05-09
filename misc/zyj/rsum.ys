@@ -1,0 +1,42 @@
+# Yanjie Ze 519021910706
+
+.pos 0
+irmovl stack, %esp
+call main
+halt
+
+.align 4
+ele1:
+    .long 0x00a
+    .long ele2
+ele2:
+    .long 0x0b0
+    .long ele3
+ele3:
+    .long 0xc00
+    .long 0
+
+
+main:
+    irmovl ele1, %ebx # ebx is head
+    irmovl $0, %esi # esi is constant 0
+    xorl %eax, %eax # esp to store sum   
+    call rsum
+    ret
+
+
+rsum:
+    addl %esi, %ebx
+    jne elseadd
+    ret
+
+
+elseadd:
+    mrmovl (%ebx), %ecx
+    addl %ecx, %eax
+    mrmovl 4(%ebx), %ebx
+    jmp rsum
+
+.pos 0x400
+stack:
+

@@ -1,16 +1,18 @@
 # Yanjie Ze 519021910706
+# Zhenyu Tang
+# 
 # score: 60/60, 8.93 (recent 10 tests: 8.92x7, 8.93x2, 8.91x1)
-# idea: loop unrolling 6 times + solving load use hazard 
-# + binary search + jumps rearrangement according to AT
+#
+# idea: 
+# loop unrolling 6 times 
+# + solving load use hazard 
+# + binary search tree
+# + jumps rearrangement according to AT
 
 #/* $begin ncopy-ys */
 ##################################################################
 # ncopy.ys - Copy a src block of len ints to dst.
 # Return the number of positive ints (>0) contained in src.
-#
-# Include your name and ID here.
-#
-# Describe how and why you modified the baseline code.
 #
 ##################################################################
 # Do not modify this portion
@@ -73,20 +75,23 @@ iaddl $24, %ecx # update
 iaddl $-6, %edx # len -= 6
 jge loop1 # if len >= 0, go to new loop1
 ### rest loop ###
+# (Ze commented: the basic idea is to add back to the original value,
+#	then compared to find the corresponding unroll)
+#
 # binary search
 # (Tang commented: always taken strategy, 
 # suppose the data is uniformly distributed,
 # therefore rearranged the jumps)
 restjudge:
-	iaddl $3, %edx
-	jl searchleft
-	jg searchright
-	jmp restloop3
-searchright:
+	iaddl $3, %edx # -5,-4,-3,-2,-1(1,2,3,4,5)
+	jl searchleft # jump to left tree (1,2)
+	jg searchright # jump to right tree (4,5)
+	jmp restloop3 # jump to 3
+searchright: # right tree(4,5)
 	iaddl $-1, %edx
 	je restloop4
 	jmp restloop5
-searchleft:
+searchleft: # left tree(1,2)
 	iaddl $2, %edx
 	je restloop1
 	jg restloop2
