@@ -1,6 +1,7 @@
 # Arch Lab
-Course Information: CS359 Computer Architecture, for SJTU CS
-### Group Member: [Yanjie Ze](https://github.com/YanjieZe), [Zhenyu Tang](https://github.com/Vladimirovich2019) . Finished in 2021.5.9
+**Course Information**: CS359 Computer Architecture, for SJTU CS
+
+**Group Member**: [Yanjie Ze](https://github.com/YanjieZe), [Zhenyu Tang](https://github.com/Vladimirovich2019) . Finished in 2021.5.9
 
 
 
